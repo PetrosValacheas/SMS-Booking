@@ -6,6 +6,7 @@ const messagingResponse = require('twilio').twiml.messagingResponse;
 server.use(bodyParser.urlencoded({extended: true}));
 server.use(session({secret: process.env.SESSION_SECRET}));
 const port = process.env.EXPRESS_PORT || 3001;
+const weekdays = process.env.WEEKDAYS.split(',');
 
 server.get('/test', (request,response) => {
 
@@ -38,26 +39,41 @@ server.post('/receive-sms', (request,response) => {
 
 				} else if (messageContent.includes('personal')) {
 
-					reuest.session.type = 'personal trainer';
+					request.session.type = 'personal trainer';
 
 				} else if(messageContent.includes('massage')) {
 
 					reuest.session.type = 'masseur';
 				} 
-
 				if(!request.session.type) {
 
-					messgae = 'Sorry i did not understand your request!';
+					message = 'Sorry i did not understand your request!';
+
 				} else {
 
 					request.session.step = 2;
-					message = `What date do you want to see the ${request.session.type} `
+					message = `What date do you want to see the ${request.session.type}`
 				}
-				conosle.log('step 1');
+				console.log('step 1');
 				break;
 			case 2:
-				messgae = "step 2";
-				request.session.step = 3;
+
+				const weekday = weekdays.filter(w => w.messageContent.includes(w));
+				if(weekday.length === 0) {
+
+					message = 'I am not sure what day of the week do u want to make a reservation!'
+
+				} else if(weekday.length > 1) {
+
+					request.session.step = 3;
+					messgae = "Please select just one day for the booking!"
+
+				} else {
+
+					mesage = `Do you want to book it on ${weekday[0]}\n
+								10am, 11am , 1pm , 4pm`
+
+				}
 				console.log('step 2');
 				break;
 			default: 
