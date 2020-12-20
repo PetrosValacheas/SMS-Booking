@@ -1,4 +1,18 @@
 require("dotenv").config();
+const server = require('express')();
+const port = process.env.EXPRESS_PORT || 3001;
+
+server.get('/test', (request,response) => {
+
+	response.send('Hello from nodemon');
+
+});
+
+server.listen(port, () => {
+
+	console.log('Listening on port ${port} ');
+
+});
 
 const from = process.env.PHONE_NUMBER;
 const to = process.env.MY_NUMBER;
@@ -14,11 +28,15 @@ const twilio = require('twilio')(
 	}
 );
 
+
+function sendSms(){
 twilio.messages.create({
 
 	from,
 	to,
 	body: "Hello from Twilio"
 
-}).then((message) => console.log('Message sent with sid ${message}'))
+}).then((message) => console.log('Message sent with sid ${message.sid} '))
 .catch((error) => console.log(error));
+
+}
