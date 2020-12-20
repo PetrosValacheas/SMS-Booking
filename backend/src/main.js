@@ -14,7 +14,7 @@ server.get('/test', (request,response) => {
 });
 server.post('/receive-sms', (request,response) => {
 
-	const body = request.body;
+	const messageContent = request.body.Body;
 	const state = request.session.step;
 	console.log('body', body);
 	console.log('state', state);
@@ -23,11 +23,50 @@ server.post('/receive-sms', (request,response) => {
 
 		request.session.step = 1;
 
-		message = "this is your first message!"
-
+		message = `Hi, do you want to book an appointment to:\
+					see the gym \n
+					book a personal trainer\n
+					book a massage`;
 	} else {
+
+		switch(step){
+
+			case 1:
+				if(messageContent.includes(gym)){
+
+					request.session.type = 'gym';
+
+				} else if (messageContent.includes('personal')) {
+
+					reuest.session.type = 'personal trainer';
+
+				} else if(messageContent.includes('massage')) {
+
+					reuest.session.type = 'masseur';
+				} 
+
+				if(!request.session.type) {
+
+					messgae = 'Sorry i did not understand your request!';
+				} else {
+
+					request.session.step = 2;
+					message = `What date do you want to see the ${request.session.type} `
+				}
+				conosle.log('step 1');
+				break;
+			case 2:
+				messgae = "step 2";
+				request.session.step = 3;
+				console.log('step 2');
+				break;
+			default: 
+				console.log(`Could not find the step! for value ${step}`)
+
+		}
+
 		request.session.step = 2;
-		message = "this is your second message!"
+		message = ``
 	}
 	const twiml = new messagingResponse();
 	twiml.message(message);
@@ -38,7 +77,7 @@ server.post('/receive-sms', (request,response) => {
 
 server.listen(port, () => {
 
-	console.log('Listening on port ${port} ');
+	console.log(`Listening on port ${port} `);
 
 });
 
