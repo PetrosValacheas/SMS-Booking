@@ -17,9 +17,8 @@ server.post('/receive-sms', (request,response) => {
 
 	const messageContent = request.body.Body;
 	const state = request.session.step;
-	console.log('body', body);
-	console.log('state', state);
 	let message;
+
 	if(!state){
 
 		request.session.step = 1;
@@ -28,6 +27,7 @@ server.post('/receive-sms', (request,response) => {
 					see the gym \n
 					book a personal trainer\n
 					book a massage`;
+
 	} else {
 
 		switch(step){
@@ -43,7 +43,7 @@ server.post('/receive-sms', (request,response) => {
 
 				} else if(messageContent.includes('massage')) {
 
-					reuest.session.type = 'masseur';
+					reuest.session.type = '-';
 				} 
 				if(!request.session.type) {
 
@@ -72,7 +72,6 @@ server.post('/receive-sms', (request,response) => {
 
 					mesage = `Do you want to book it on ${weekday[0]}\n
 								10am, 11am , 1pm , 4pm`
-
 				}
 				console.log('step 2');
 				break;
